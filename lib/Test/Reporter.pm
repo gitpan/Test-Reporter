@@ -25,7 +25,7 @@ use vars qw($VERSION $AUTOLOAD $Tempfile $Report $MacMPW $MacApp $DNS $Domain $S
 
 $MacMPW    = $^O eq 'MacOS' && $MacPerl::Version =~ /MPW/;
 $MacApp    = $^O eq 'MacOS' && $MacPerl::Version =~ /Application/;
-$VERSION = '1.23';
+$VERSION = '1.24';
 
 local $^W;
 
@@ -198,9 +198,9 @@ sub edit_comments {
 	my $comments;
 	{
 		local $/;
-		open FH, $Report or die __PACKAGE__, ": Can't open comment file: $!";
+		open FH, $Report or die __PACKAGE__, ": Can't open comment file '$Report': $!";
 		$comments = <FH>;
-		close FH or die __PACKAGE__, ": Can't close comment file: $!";
+		close FH or die __PACKAGE__, ": Can't close comment file '$Report': $!";
 	}
 
 	chomp $comments;
@@ -245,14 +245,15 @@ sub write {
 
 	my($fh, $file); unless ($fh = $_[0]) {
 		$file = "$dir/$grade.$distribution.$Config{archname}.$Config{osvers}.${\(time)}.$$.rpt";
-		open $fh, ">$file" or die __PACKAGE__, ": Can't open report file: $!";
+		warn $file if $self->debug();
+		open $fh, ">$file" or die __PACKAGE__, ": Can't open report file '$file': $!";
 	}
 	print $fh "From: $from\n";
 	print $fh "Subject: $subject\n";
 	print $fh "Report: $report";
-	if ($_[0]) {
-		close $fh or die __PACKAGE__, ": Can't close report file: $!";
-
+	unless ($_[0]) {
+		close $fh or die __PACKAGE__, ": Can't close report file '$file': $!";
+		warn $file if $self->debug();
 		return $file;
 	} else {
 		return $fh;
@@ -267,9 +268,9 @@ sub read {
 
 	{
 		local $/;
-		open REPORT, $file or die __PACKAGE__, ": Can't open report file: $!";
+		open REPORT, $file or die __PACKAGE__, ": Can't open report file '$file': $!";
 		$buffer = <REPORT>;
-		close REPORT or die __PACKAGE__, ": Can't close report file: $!";
+		close REPORT or die __PACKAGE__, ": Can't close report file '$file': $!";
 	}
 
 	if (my ($from, $subject, $report) = $buffer =~ /^From:\s(.+)Subject:\s(.+)Report:\s(.+)$/s) {
@@ -535,7 +536,7 @@ sub _start_editor_mac {
 
 	use vars '%Application';
 	for my $mod (qw(Mac::MoreFiles Mac::AppleEvents::Simple Mac::AppleEvents)) {
-		eval qq(require $mod) or die __PACKAGE__, ": Can't load $mod.\n";
+		eval qq(require $mod) or die __PACKAGE__, ": Can't load $mod; \$\@: $@\n";
 		eval qq($mod->import());
 	}
 

@@ -3,6 +3,7 @@ INSTALL
 MANIFEST			This list of files
 MANIFEST.SKIP
 Makefile.PL
+META.yml
 README
 SIGNATURE
 bin/cpantest

@@ -1,0 +1,36 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.44.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 81ed54905b582e039a38fcd2d181e9eeafebead4 Changes
+SHA1 507ce8cd7110d1dd67103d27e867f46a27f6e728 INSTALL
+SHA1 8afcf8cb1e9af0153f31cc316977745feca22d13 MANIFEST
+SHA1 07b86c69aa463b94d3db89d0889b789ccd529b31 MANIFEST.SKIP
+SHA1 97b8a616d321ff1676e0412f267d5de4fec754ac Makefile.PL
+SHA1 cb234f85c8e39410bdebfd53ca0a0568ada4029f README
+SHA1 bcc7f746a47cf431322033a8b7bb0866f2fc8431 bin/cpantest
+SHA1 93112b7b585b251bd4d0db50e888fa785b06d267 lib/Test/Reporter.pm
+SHA1 89261d1a8c8d7cef7531c374da11c753859e2e60 lib/Test/Reporter.pod
+SHA1 7f81c92931316ea055c2fe099329c3cb710fb24d lib/Test/Reporter/Date/Format.pm
+SHA1 384b966e8e2770d28e498fc2ced4344fbaa0f338 lib/Test/Reporter/Mail/Util.pm
+SHA1 d7f24d9a85b32cbb48653ac24436a6833c01a0ce lib/Test/Reporter/Time/Zone.pm
+SHA1 6626a3f7181288b4a6d23d4a39e505ef861c1a9c t/reporter.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.6 (Darwin)
+
+iD8DBQFBzuHTCV/r5CcpuVoRAmr+AKCJ4P1aAE0SP64ZjIi8F/y4c3U46QCeIFqG
+srdK8X88Km9/f7CUlGKaePI=
+=6jcu
+-----END PGP SIGNATURE-----

@@ -25,7 +25,8 @@ use vars qw($VERSION $AUTOLOAD $fh $Report $MacMPW $MacApp $dns $domain $send);
 
 $MacMPW    = $^O eq 'MacOS' && $MacPerl::Version =~ /MPW/;
 $MacApp    = $^O eq 'MacOS' && $MacPerl::Version =~ /Application/;
-($VERSION) = '$Revision: 1.20 $' =~ /\s+(\d+\.\d+)\s+/;
+# ($VERSION) = '$Revision: 1.20 $' =~ /\s+(\d+\.\d+)\s+/;
+$VERSION = '1.21';
 
 local $^W;
 

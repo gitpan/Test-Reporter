@@ -1,0 +1,6 @@
+Makefile
+Makefile.old
+blib/*
+pass.Test-Reporter-*
+pm_to_blib
+MANIFEST.bak

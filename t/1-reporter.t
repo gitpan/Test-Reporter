@@ -139,7 +139,7 @@ for my $field ( qw( _archname _osvers _myconfig) )
 # create fake perl
 {
     my $fh = FileHandle->new();
-    open( $fh, '>', $alt_perl) or die "cannot create (fake) $alt_perl: $!";
+    open( $fh, ">$alt_perl") or die "cannot create (fake) $alt_perl: $!";
     # fake perl, still needs to grab the magick number!
     print {$fh} qq{(\$m= join( '', \@ARGV))=~ s{\\D}{}g; print "\$m\nnew_archname\nnew_osvers\nnew_myconfig\n(several lines)"; };
     close $fh;
@@ -149,20 +149,20 @@ for my $field ( qw( _archname _osvers _myconfig) )
     ok( $reporter->perl_version->{_osvers} eq 'new_osvers');
     ok( $reporter->perl_version->{_myconfig} eq "new_myconfig\n(several lines)");
 
-    unlink $alt_perl;
+    1 while (unlink $alt_perl);
 }
 
 # testing error
 {
     my $fh = FileHandle->new();
-    open( $fh, '>', $alt_perl) or die "cannot create (fake, not working) $alt_perl: $!";
+    open( $fh, ">$alt_perl") or die "cannot create (fake, not working) $alt_perl: $!";
     # fake perl, gives wrong output
     print {$fh} qq{print "booh"; };
     close $fh;
 
     eval { $reporter->perl_version( "$^X $alt_perl"); };
     ok($@=~ q{^Test::Reporter: cannot get perl version info from});
-    unlink $alt_perl;
+    1 while (unlink $alt_perl);
 }
 
 ok($reporter->_is_a_perl_release('perl-5.9.3'));

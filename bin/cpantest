@@ -23,7 +23,7 @@ use vars qw(
     $Transport
 );
 
-$VERSION       = '1.34';
+$VERSION       = '1.36';
 ($Tempfile, $Report) = File::Temp::tempfile(UNLINK => 1);
 $Reporter      = Test::Reporter->new();
 %Grades        = (
@@ -47,7 +47,8 @@ $Reporter      = Test::Reporter->new();
 
 if ($Dump) {
     my $fh; open($fh, '>-') or die "Can't open STDOUT: $!";
-    print $Reporter->write($fh);
+    $Reporter->write($fh);
+    print $fh "\n";
 } else {
     &confirm_send() if not $Automatic;
     &send();

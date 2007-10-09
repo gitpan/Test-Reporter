@@ -24,7 +24,7 @@ use constant FAKE_NO_NET_DNS => 0;    # for debugging only
 use constant FAKE_NO_NET_DOMAIN => 0; # for debugging only
 use constant FAKE_NO_MAIL_SEND => 0;  # for debugging only
 
-$VERSION = '1.34';
+$VERSION = '1.36';
 
 local $^W = 1;
 
@@ -269,7 +269,7 @@ sub send {
     }
     else {
         # Addresses #9831: Usage of Mail::Mailer is broken on Win32
-        if ($^O !~ /^(?:cygwin|MSWin32)$/ && $self->_have_mail_send()) {
+        if ($^O !~ /^(?:cygwin|MSWin32|VMS)$/ && $self->_have_mail_send()) {
             return $self->_mail_send(@recipients);
         }
         else {
@@ -294,7 +294,20 @@ sub write {
     $distribution =~ s/[^A-Za-z0-9\.\-]+//g;
 
     my($fh, $file); unless ($fh = $_[0]) {
-        $file = "$dir/$grade.$distribution.$self->{_perl_version}->{_archname}.$self->{_perl_version}->{_osvers}.${\(time)}.$$.rpt";
+        $file = "$grade.$distribution.$self->{_perl_version}->{_archname}.$self->{_perl_version}->{_osvers}.${\(time)}.$$.rpt";
+
+        if ($^O eq 'VMS') {
+            $file = "$grade.$distribution.$self->{_perl_version}->{_archname}";
+            my $ext = "$self->{_perl_version}->{_osvers}.${\(time)}.$$.rpt";
+            # only 1 period in filename
+            # we also only have 39.39 for filename
+            $file =~ s/\./_/g;
+            $ext  =~ s/\./_/g;
+            $file = $file . '.' . $ext;
+        }
+
+        $file = File::Spec->catfile($dir, $file);
+
         warn $file if $self->debug();
         $fh = FileHandle->new();
         open $fh, ">$file" or die __PACKAGE__, ": Can't open report file '$file': $!";
@@ -854,8 +867,8 @@ Test::Reporter - sends test results to cpan-testers@perl.org
 =head1 DESCRIPTION
 
 Test::Reporter reports the test results of any given distribution to the CPAN
-testing service. Test::Reporter has wide support for various perl5's and
-platforms. For further information visit the below links:
+Testers. Test::Reporter has wide support for various perl5's and platforms. For
+further information visit the below links:
 
 =over 4
 

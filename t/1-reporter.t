@@ -17,7 +17,6 @@ $reporter->distribution('Mail-Freshmeat-1.20');
 
 ok($reporter->subject =~ /^PASS Mail-Freshmeat-1.20\s/);
 ok($reporter->report =~ /This distribution has been tested/);
-ok($reporter->report =~ /Please cc any replies to/);
 ok($reporter->report =~ /Summary of my/);
 ok($reporter->grade, 'pass');
 ok($reporter->distribution, 'Mail-Freshmeat-1.20');
@@ -39,7 +38,6 @@ $reporter->mx([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 ok($reporter->subject =~ /^FAIL Foo-Bar-1.50\s/);
 ok($reporter->report =~ /This distribution has been tested/);
-ok($reporter->report =~ /Please cc any replies to/);
 ok($reporter->report =~ /Summary of my/);
 ok($reporter->report =~ /blah/);
 ok($reporter->grade, 'fail');
@@ -87,7 +85,6 @@ $reporter = Test::Reporter->new
 ok(ref $reporter, 'Test::Reporter');
 ok($reporter->subject =~ /^PASS Bar-1.0\s/);
 ok($reporter->report =~ /This distribution has been tested/);
-ok($reporter->report =~ /Please cc any replies to/);
 ok($reporter->report =~ /Summary of my/);
 ok($reporter->report =~ /woo/);
 ok($reporter->grade, 'pass');
@@ -123,7 +120,6 @@ $reporter = Test::Reporter->new
 ok(ref $reporter, 'Test::Reporter');
 ok($reporter->subject =~ /^PASS $distro\s/);
 ok($reporter->report =~ /This distribution has been tested/);
-ok($reporter->report =~ /Please cc any replies to/);
 ok($reporter->report =~ /Summary of my/);
 ok($reporter->grade, 'pass');
 ok($reporter->distribution, $distro);
@@ -234,6 +230,14 @@ ok($reporter->transport('Mail::Send') eq 'Mail::Send');
 ok($reporter->{_transport} eq 'Mail::Send');
 ok($reporter->transport('Net::SMTP') eq 'Net::SMTP');
 ok($reporter->{_transport} eq 'Net::SMTP');
+ok($reporter->transport('Net::SMTP::TLS') eq 'Net::SMTP::TLS');
+ok($reporter->{_transport} eq 'Net::SMTP::TLS');
+
+# Arguments stored in _tls
+$reporter->transport('Net::SMTP::TLS', Username => 'LarryW', Password => 'JAPH');
+my %tls_args = $reporter->transport_args();
+ok( $tls_args{Username} eq 'LarryW' );
+ok( $tls_args{Password} eq 'JAPH' );
 
 eval { $reporter->transport('Invalid::Transport'); };
 ok($@ =~ q{is invalid, choose from});
@@ -243,7 +247,9 @@ ok($@ =~ q{is invalid, choose from});
     my @xport_args = ('foo', 'bar', 'baz', 'wibble', 'plink!');
     my $xport_args = \@xport_args;
     ok($reporter->transport('Mail::Send', $xport_args) eq 'Mail::Send');
-    ok($reporter->{_mail_send_args} eq $xport_args);
+    ok( join(" ", $reporter->transport_args) eq 
+        join(" ", @xport_args)
+    );
 }
 
 undef $reporter;

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Test-Reporter
-version:             1.38_01
+version:             1.39_04
 abstract:            sends test results to cpan-testers@perl.org
 license:             perl
 author:              
@@ -16,3 +16,9 @@ requires:
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.3.html
     version: 1.3
+resources:
+    license: http://dev.perl.org/licenses/
+    homepage: http://code.google.com/p/test-reporter/
+    bugtracker: http://code.google.com/p/test-reporter/issues/list
+    Repository: http://eclipse.resort.org/git/gitweb.cgi?p=test-reporter.git
+    MailingList: http://groups.google.com/group/test-reporter

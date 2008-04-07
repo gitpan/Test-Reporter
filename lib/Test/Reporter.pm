@@ -1,12 +1,21 @@
 # Test::Reporter - sends test results to cpan-testers@perl.org
-# Copyright (c) 2007 Adam J. Foxson. All rights reserved.
-
+#
+# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Adam J. Foxson.
+# Copyright (C) 2008 David A. Golden
+# Copyright (C) 2008 Ricardo Signes
+# Copyright (C) 2004, 2005 Richard Soderberg.
+# All rights reserved.
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the same terms as Perl itself.
-
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 package Test::Reporter;
 
@@ -24,7 +33,7 @@ use constant FAKE_NO_NET_DNS => 0;    # for debugging only
 use constant FAKE_NO_NET_DOMAIN => 0; # for debugging only
 use constant FAKE_NO_MAIL_SEND => 0;  # for debugging only
 
-$VERSION = '1.38_01';
+$VERSION = '1.39_04';
 
 local $^W = 1;
 
@@ -108,7 +117,7 @@ sub _process_params {
 
     my %params   = @_;
     my @defaults = qw(
-        mx address grade distribution from comments via timeout debug dir perl_version transport transport_args);
+        mx address grade distribution from comments via timeout debug dir perl_version transport_args transport );
     my %defaults = map {$_ => 1} @defaults;
 
     for my $param (keys %params) {   
@@ -186,20 +195,14 @@ sub transport {
     my $self = shift;
     warn __PACKAGE__, ": transport\n" if $self->debug();
 
-    my %transports    = (
-        # support for plugin transports will eventually be added, but not today
-        'Net::SMTP' => 'Builtin transport using Net::SMTP',
-        'Net::SMTP::TLS' => 'Builtin transport using Net::SMTP::TLS',
-        'Mail::Send' => 'Builtin transport using Mail::Send',
-        'HTTP' => 'Builtin transport using HTTP',
-    );
-
     return $self->{_transport} unless scalar @_;
 
     my $transport = shift;
 
-    croak __PACKAGE__, ":transport: '$transport' is invalid, choose from: " .
-        join ' ', keys %transports unless $transports{$transport};
+    my $transport_class = "Test::Reporter::Transport::$transport";
+    unless ( eval "require $transport_class; 1" ) { 
+        croak __PACKAGE__ . ": could not load '$transport_class'\n$@\n";
+    }
 
     my @args = @_;
 
@@ -266,26 +269,16 @@ sub send {
         return;
     }
 
-    my $transport = $self->transport();
+    my $transport_type  = $self->transport() || 'Net::SMTP';
+    my $transport_class = "Test::Reporter::Transport::$transport_type";
+    my $transport = $transport_class->new( $self->transport_args() );
 
-    if ($transport eq 'Mail::Send' && $self->_have_mail_send()) {
-        return $self->_mail_send(@recipients);
+    unless ( eval { $transport->send( $self, \@recipients ) } ) {
+        $self->errstr(__PACKAGE__ . ": error from '$transport_class:'\n$@\n");
+        return;
     }
-    elsif ($transport =~ /^Net::SMTP/ ) {
-        return $self->_send_smtp(@recipients);
-    }
-    elsif ($transport eq 'HTTP' ) {
-        return $self->_send_http();
-    }
-    else {
-        # Addresses #9831: Usage of Mail::Mailer is broken on Win32
-        if ($^O !~ /^(?:cygwin|MSWin32|VMS)$/ && $self->_have_mail_send()) {
-            return $self->_mail_send(@recipients);
-        }
-        else {
-            return $self->_send_smtp(@recipients);
-        }
-    }
+
+    return 1;
 }
 
 sub write {
@@ -377,197 +370,6 @@ sub _verify {
         join ', ', map {$_ =~ /^_(.+)$/} @undefined) if
         scalar @undefined > 0;
     return $self->errstr() ? return 0 : return 1;
-}
-
-sub _mail_send {
-    my $self = shift;
-    warn __PACKAGE__, ": _mail_send\n" if $self->debug();
-
-    my $fh;
-    my $recipients;
-    my @recipients = @_;
-    my $via        = $self->via();
-    my $msg        = Mail::Send->new();
-
-    if (@recipients) {
-        $recipients = join ', ', @recipients;
-        chomp $recipients;
-        chomp $recipients;
-    }
-
-    $via = ', via ' . $via if $via;
-
-    $msg->to($self->address());
-    $msg->set('From', $self->from());
-    $msg->subject($self->subject());
-    $msg->add('X-Reported-Via', "Test::Reporter ${VERSION}$via");
-    $msg->add('Cc', $recipients) if @_;
-
-    $fh = $msg->open( $self->transport_args() );
-
-    print $fh $self->report();
-    
-    $fh->close();
-}
-
-sub _send_smtp {
-    my $self = shift;
-    warn __PACKAGE__, ": _send_smtp\n" if $self->debug();
-
-    my $helo          = $self->_maildomain();
-    my $from          = $self->from();
-    my $via           = $self->via();
-    my $debug         = $self->debug();
-    my @recipients    = @_;
-    my @tmprecipients = ();
-    my @bad           = ();
-    my $success       = 0;
-    my $fail          = 0;
-    my $recipients;
-    my $smtp;
-
-    my $mx;
-
-    my $transport = $self->transport;
-
-    for my $server (@{$self->{_mx}}) {
-        eval {
-            $smtp = $transport->new($server, Hello => $helo,
-                Timeout => $self->{_timeout}, Debug => $debug,
-                $self->transport_args
-            );
-        };
-        my $err = $@ ? ": $@" : q{};
-
-        if (defined $smtp) {
-            $mx = $server;
-            last;
-        }
-        else {
-            warn __PACKAGE__, ": Unable to connect to MX '$server'$err\n" if $self->debug();
-            $fail++;
-        }
-    }
-
-    unless ($mx && $smtp) {
-        $self->errstr(__PACKAGE__ . ': Unable to connect to any MX\'s');
-        return 0;
-    }
-
-    if (@recipients) {
-        if ($mx =~ /(?:^|\.)(?:perl|cpan)\.org$/) {
-            for my $recipient (sort @recipients) {
-                if ($recipient =~ /(?:@|\.)(?:perl|cpan)\.org$/) {
-                    push @tmprecipients, $recipient;
-                } else {
-                    push @bad, $recipient;
-                }
-            }
-
-            if (@bad) {
-                warn __PACKAGE__, ": Will not attempt to cc the following recipients since perl.org MX's will not relay for them. Either install Mail::Send, use other MX's, or only cc address ending in cpan.org or perl.org: ${\(join ', ', @bad)}.\n";
-            }
-
-            @recipients = @tmprecipients;
-        }
-
-        $recipients = join ', ', @recipients;
-        chomp $recipients;
-        chomp $recipients;
-    }
-
-    $via = ', via ' . $via if $via;
-
-    my $envelope_sender = $from;
-    $envelope_sender =~ s/\s\([^)]+\)$//; # email only; no name
-
-    # Net::SMTP::TLS dies on error so eval
-    eval {
-        $success += $smtp->mail($envelope_sender);
-        $success += $smtp->to($self->{_address});
-        $success += $smtp->cc(@recipients) if @recipients;
-        $success += $smtp->data();
-        $success += $smtp->datasend("Date: ", $self->_format_date, "\n");
-        $success += $smtp->datasend("Subject: ", $self->subject(), "\n");
-        $success += $smtp->datasend("From: $from\n");
-        $success += $smtp->datasend("To: ", $self->{_address}, "\n");
-        $success += $smtp->datasend("Cc: $recipients\n") if @recipients && $success == 8;
-        $success += $smtp->datasend("Message-ID: ", $self->message_id(), "\n");
-        $success +=
-            $smtp->datasend("X-Reported-Via: Test::Reporter ${VERSION}$via\n");
-        $success += $smtp->datasend("\n");
-        $success += $smtp->datasend($self->report());
-        $success += $smtp->dataend();
-        $success += $smtp->quit;
-    };
-    my $err = $@;
-
-    if ( $err ) {
-        $self->errstr(__PACKAGE__ . ": Unable to send test report\n");
-    }
-    elsif (@recipients && $success != 15 ) {
-        $self->errstr(__PACKAGE__ .
-            ": Unable to send test report to one or more recipients\n"); 
-    }
-    elsif ($success != 13) {
-        $self->errstr(__PACKAGE__ . ": Unable to send test report\n");
-    }
-
-    return $self->errstr() ? 0 : 1;
-}
-
-sub _send_http {
-    my $self = shift;
-    warn __PACKAGE__, ": _send_http\n" if $self->debug();
-    
-    # need LWP
-    eval { require LWP::UserAgent };
-    if ($@) {
-        $self->errstr(__PACKAGE__ . 
-            ": LWP::UserAgent not installed -- can't use HTTP transport\n"
-        );
-        return;
-    }
-
-    # need a transport argument
-    my ($url, $key) = $self->transport_args;
-    if ( ! defined $url ) {
-        $self->errstr(__PACKAGE__ . 
-            ": No url argument provided for HTTP transport\n"
-        );
-        return;
-    }
-
-    # construct the "via"
-    my $via = "Test::Reporter ${VERSION}";
-    $via .= ', via ' . $self->via() if $self->via();
-
-    # post the report
-    my $ua = LWP::UserAgent->new;
-    $ua->timeout(60);
-    $ua->env_proxy;
-
-    my $form = {
-        key => $key,
-        via => $via,
-        from => $self->from(),
-        subject => $self->subject(),
-        report => $self->report(),
-    };
-
-    my $response = $ua->post( $url, $form );
-
-    if ($response->is_success) {
-        return 1;
-    }
-    else {
-        $self->errstr(__PACKAGE__ . 
-            ": HTTP error: ". $response->status_line . "\n" .
-            $response->content
-        );
-    
-        return;
-    }
 }
 
 # Courtesy of Email::MessageID
@@ -885,43 +687,7 @@ sub _is_a_perl_release {
     return $perl =~ /^perl-?\d\.\d/;
 }
 
-
-# Next two subs courtesy of Casey West, Ricardo SIGNES, and Email::Date
-# Visit the Perl Email Project at: http://emailproject.perl.org/
-sub _tz_diff {
-    my $self = shift;
-    warn __PACKAGE__, ": _tz_diff\n" if $self->debug();
-
-    my ($time) = @_;
-
-    my $diff  =   Time::Local::timegm(localtime $time)
-                - Time::Local::timegm(gmtime    $time);
-
-    my $direc = $diff < 0 ? '-' : '+';
-       $diff  = abs $diff;
-    my $tz_hr = int( $diff / 3600 );
-    my $tz_mi = int( $diff / 60 - $tz_hr * 60 );
-
-    return ($direc, $tz_hr, $tz_mi);
-}
-
-sub _format_date {
-    my $self = shift;
-    warn __PACKAGE__, ": _format_date\n" if $self->debug();
-
-    my ($time) = @_;
-    $time = time unless defined $time;
-
-    my ($sec, $min, $hour, $mday, $mon, $year, $wday) = (localtime $time);
-    my $day   = (qw[Sun Mon Tue Wed Thu Fri Sat])[$wday];
-    my $month = (qw[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec])[$mon];
-    $year += 1900;
-
-    my ($direc, $tz_hr, $tz_mi) = $self->_tz_diff($time);
-
-    sprintf "%s, %d %s %d %02d:%02d:%02d %s%02d%02d",
-      $day, $mday, $month, $year, $hour, $min, $sec, $direc, $tz_hr, $tz_mi;
-}
+__END__
 
 =head1 NAME
 
@@ -1001,7 +767,7 @@ Discussion group for Test::Reporter
 
 The Wiki for Test::Reporter
 
-=item * L<http://repo.or.cz/w/test-reporter.git>
+=item * L<http://eclipse.resort.org/git/gitweb.cgi?p=test-reporter.git>
 
 Test::Reporter's public git source code repository.
 
@@ -1170,13 +936,11 @@ reports. Default is 120 seconds.
 
 =item * B<transport>
 
-Optional. Gets or sets the transport method. If you do not specify a transport,
-one will be selected automatically on your behalf: If you're on Windows,
-Net::SMTP will be selected, if you're not on Windows, Net::SMTP will be
-selected unless Mail::Send is installed, in which case Mail::Send is used.
+Optional. Gets or sets the transport type. The transport type argument is 
+refers to a 'Test::Reporter::Transport' subclass.  The default is 'Net::SMTP',
+which uses the [Test::Reporter::Transport::Net::SMTP] class.
 
-At the moment, this must be one of either 'Net::SMTP', 'Net::SMTP::TLS',
-'Mail::Send' or 'HTTP'.  You can add additional arguments after the transport
+You can add additional arguments after the transport
 selection.  These will be passed to the constructor of the lower-level
 transport. This can be used to great effect for all manner of fun and
 enjoyment. ;-) See C<transport_args>.
@@ -1257,8 +1021,10 @@ domain.  Setting the MAILDOMAIN environment variable will avoid this delay.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2007 Adam J. Foxson. All rights reserved.  Some revisions
-copyright (c) 2008 David A. Golden.
+ Copyright (C) 2008 David A. Golden.
+ Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Adam J. Foxson.
+ Copyright (C) 2004, 2005 Richard Soderberg.
+ All rights reserved.
 
 =head1 LICENSE
 
@@ -1311,7 +1077,7 @@ Kirrily "Skud" Robert E<lt>F<skud@cpan.org>E<gt>, and
 Kurt Starsinic E<lt>F<Kurt.Starsinic@isinet.com>E<gt> for predecessor versions
 (CPAN::Test::Reporter, and cpantest respectively).
 
-Additional contributions by David A. Golden E<lt>dagolden@cpan.orgE<gt>.
+Additional contributions by David A. Golden and Ricardo Signes.
 
 =cut
 

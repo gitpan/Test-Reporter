@@ -5,7 +5,7 @@ use FileHandle;
 use Test;
 use Test::Reporter;
 
-BEGIN { plan tests => 129 }
+BEGIN { plan tests => 124 }
 
 my $distro = sprintf "Test-Reporter-%s", $Test::Reporter::VERSION;
 
@@ -124,6 +124,8 @@ ok($reporter->report =~ /Summary of my/);
 ok($reporter->grade, 'pass');
 ok($reporter->distribution, $distro);
 
+unlink $file;
+
 # testing perl-version with the current perl
 my $alt_perl = 'alt_perl.pl';
 my $no_version = $reporter->perl_version;
@@ -218,32 +220,28 @@ ok(not $reporter->_is_a_perl_release('Perl-Visualize-1.02'));
 
 ok($reporter->message_id =~ /^<\d+\.[^.]+\.\d+@[^>]+>$/);
 
-ok($reporter->_format_date() =~ /^\w{3},\s\d{1,2}\s\w{3}\s\d{4}\s\d{2}:\d{2}:\d{2}\s[-+]\d{4}$/);
-
 undef $reporter;
 
 $reporter = Test::Reporter->new();
 
 ok($reporter->transport() eq '');
 ok($reporter->{_transport} eq '');
-ok($reporter->transport('Mail::Send') eq 'Mail::Send');
-ok($reporter->{_transport} eq 'Mail::Send');
 ok($reporter->transport('Net::SMTP') eq 'Net::SMTP');
 ok($reporter->{_transport} eq 'Net::SMTP');
-ok($reporter->transport('Net::SMTP::TLS') eq 'Net::SMTP::TLS');
-ok($reporter->{_transport} eq 'Net::SMTP::TLS');
 
 # Arguments stored in _tls
-$reporter->transport('Net::SMTP::TLS', Username => 'LarryW', Password => 'JAPH');
+$reporter->transport('Net::SMTP', Username => 'LarryW', Password => 'JAPH');
 my %tls_args = $reporter->transport_args();
 ok( $tls_args{Username} eq 'LarryW' );
 ok( $tls_args{Password} eq 'JAPH' );
 
-eval { $reporter->transport('Invalid::Transport'); };
-ok($@ =~ q{is invalid, choose from});
+eval { $reporter->transport('Invalid'); };
+ok($@ =~ q{could not load 'Test::Reporter::Transport::Invalid'})
+    or print "# $@\n";
 
 {
     local $Test::Reporter::Send = 1;
+    local $INC{"Mail/Send.pm"} = 1; # pretend we have Mail::Send
     my @xport_args = ('foo', 'bar', 'baz', 'wibble', 'plink!');
     my $xport_args = \@xport_args;
     ok($reporter->transport('Mail::Send', $xport_args) eq 'Mail::Send');

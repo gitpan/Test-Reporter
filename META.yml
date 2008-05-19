@@ -1,11 +1,11 @@
 --- #YAML:1.0
 name:                Test-Reporter
-version:             1.39_06
+version:             1.40
 abstract:            sends test results to cpan-testers@perl.org
 license:             perl
 author:              
     - Adam J. Foxson <afoxson@pobox.com>
-generated_by:        ExtUtils::MakeMaker version 6.44
+generated_by:        ExtUtils::MakeMaker version 6.42
 distribution_type:   module
 requires:     
     File::Spec:                    0
@@ -20,5 +20,5 @@ resources:
     license: http://dev.perl.org/licenses/
     homepage: http://code.google.com/p/test-reporter/
     bugtracker: http://code.google.com/p/test-reporter/issues/list
-    Repository: http://eclipse.resort.org/git/gitweb.cgi?p=test-reporter.git
+    Repository: http://echo.dagolden.com/git/?p=Test-Reporter
     MailingList: http://groups.google.com/group/test-reporter

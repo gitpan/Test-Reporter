@@ -33,7 +33,7 @@ use constant FAKE_NO_NET_DNS => 0;    # for debugging only
 use constant FAKE_NO_NET_DOMAIN => 0; # for debugging only
 use constant FAKE_NO_MAIL_SEND => 0;  # for debugging only
 
-$VERSION = '1.40';
+$VERSION = '1.4001';
 
 local $^W = 1;
 
@@ -79,6 +79,7 @@ sub new {
         unless scalar @_ % 2 == 0;
 
     $self->_process_params(@_) if @_;
+    $self->transport('Net::SMTP') unless $self->transport();
     $self->_get_mx(@_) if $self->_have_net_dns();
 
     return $self;

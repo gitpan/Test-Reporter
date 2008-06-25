@@ -3,7 +3,7 @@ use warnings;
 package Test::Reporter::Transport::Net::SMTP;
 use base 'Test::Reporter::Transport';
 use vars qw/$VERSION/;
-$VERSION = '1.4001';
+$VERSION = '1.4002';
 $VERSION = eval $VERSION;
 
 sub new {
@@ -133,10 +133,8 @@ sub send {
         $smtp->datasend($report->report()) or $die->();
         $smtp->dataend() or $die->();
         $smtp->quit or $die->();
-    };
-    if ($@) { 
-        die "$transport: " . $smtp->message;
-    }
+        1;
+    } or die "$transport: $@";
 
     return 1;
 }

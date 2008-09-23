@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Test-Reporter
-version:             1.52
+version:             1.5201
 abstract:            sends test results to cpan-testers@perl.org
 license:             perl
 author:              
@@ -11,7 +11,6 @@ requires:
     File::Spec:                    0
     File::Temp:                    0
     Net::SMTP:                     0
-    Test:                          0
     Test::More:                    0.47
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.3.html

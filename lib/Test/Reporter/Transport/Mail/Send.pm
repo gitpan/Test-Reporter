@@ -3,7 +3,7 @@ use warnings;
 package Test::Reporter::Transport::Mail::Send;
 use base 'Test::Reporter::Transport';
 use vars qw/$VERSION/;
-$VERSION = '1.5201';
+$VERSION = '1.5202';
 $VERSION = eval $VERSION;
 
 use Mail::Send;
@@ -33,11 +33,11 @@ sub send {
     $msg->set('From', $report->from());
     $msg->subject($report->subject());
     $msg->add('X-Reported-Via', "Test::Reporter $Test::Reporter::VERSION$via");
-    $msg->add('Cc', $recipients) if @_;
+    $msg->add('Cc', $cc_str) if $cc_str;
 
     my $fh = $msg->open( @{ $self->{args} } );
 
-    print $fh $self->report();
+    print $fh $report->report();
     
     $fh->close();
 }

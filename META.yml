@@ -1,29 +1,40 @@
---- #YAML:1.0
-name:               Test-Reporter
-version:            1.5203
-abstract:           sends test results to cpan-testers@perl.org
+---
+abstract: 'sends test results to cpan-testers@perl.org'
 author:
-    - David Golden <dagolden@cpan.org>
-license:            perl
-distribution_type:  module
+  - 'David A. Golden <dagolden@cpan.org>'
+build_requires:
+  Data::Dumper: 0
+  File::Find: 0
+  Test::More: 0.47
 configure_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    File::Spec:  0
-    File::Temp:  0
-    Net::SMTP:   0
-    Test::More:  0.47
-resources:
-    bugtracker:   http://code.google.com/p/test-reporter/issues/list
-    homepage:     http://code.google.com/p/test-reporter/
-    license:      http://dev.perl.org/licenses/
-    MailingList:  http://groups.google.com/group/test-reporter
-    Repository:   http://echo.dagolden.com/git/?p=Test-Reporter
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.48
+  ExtUtils::MakeMaker: 6.48
+distribution_type: module
+generated_by: 'Module::Install version 0.81'
+license: http://dev.perl.org/licenses/
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+module_name: Test::Reporter
+name: Test-Reporter
+no_index:
+  directory:
+    - inc
+    - t
+    - xt
+requires:
+  Carp: 0
+  Cwd: 0
+  File::Temp: 0
+  FileHandle: 0
+  Net::SMTP: 0
+  Sys::Hostname: 0
+  Time::Local: 0
+  base: 0
+  constant: 0
+  perl: 5.005
+resources:
+  bugtracker: http://code.google.com/p/test-reporter/issues/list
+  homepage: http://code.google.com/p/test-reporter/
+  license: http://dev.perl.org/licenses/
+  repository: git://github.com/dagolden/test-reporter.git
+version: 1.53_01

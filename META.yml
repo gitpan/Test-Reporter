@@ -37,4 +37,4 @@ resources:
   homepage: http://code.google.com/p/test-reporter/
   license: http://dev.perl.org/licenses/
   repository: git://github.com/dagolden/test-reporter.git
-version: 1.53_02
+version: 1.53_03

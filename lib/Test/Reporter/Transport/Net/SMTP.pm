@@ -3,7 +3,7 @@ BEGIN{ if (not $] < 5.006) { require warnings; warnings->import } }
 package Test::Reporter::Transport::Net::SMTP;
 use base 'Test::Reporter::Transport';
 use vars qw/$VERSION/;
-$VERSION = '1.53_02';
+$VERSION = '1.53_03';
 $VERSION = eval $VERSION;
 
 sub new {
@@ -199,6 +199,7 @@ sub send {
     my $body = $report->report;
     my $needs_qp = $body =~ /^.{100}/m;
     $body = _encode_qp($body) if $needs_qp;
+    my @body = split /\n/, $body;
 
     # Net::SMTP returns 1 or undef for pass/fail 
     # Net::SMTP::TLS croaks on fail but may not return 1 on pass
@@ -223,7 +224,9 @@ sub send {
             $smtp->datasend("Content-Transfer-Encoding: quoted-printable\n");
         }
         $smtp->datasend("\n") or $die->();
-        $smtp->datasend($body) or $die->();
+        for my $b ( @body ) {
+          $smtp->datasend("$b\n") or $die->();
+        }
         $smtp->dataend() or $die->();
         $smtp->quit or $die->();
         1;

@@ -2,14 +2,14 @@
 package Module::Install::Makefile;
 
 use strict 'vars';
-use Module::Install::Base;
-use ExtUtils::MakeMaker ();
+use ExtUtils::MakeMaker   ();
+use Module::Install::Base ();
 
-use vars qw{$VERSION $ISCORE @ISA};
+use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.81';
+	$VERSION = '0.91';
+	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
-	@ISA     = qw{Module::Install::Base};
 }
 
 sub Makefile { $_[0] }
@@ -114,17 +114,32 @@ sub write {
 	my $self = shift;
 	die "&Makefile->write() takes no arguments\n" if @_;
 
-	# Make sure we have a new enough
+	# Check the current Perl version
+	my $perl_version = $self->perl_version;
+	if ( $perl_version ) {
+		eval "use $perl_version; 1"
+			or die "ERROR: perl: Version $] is installed, "
+			. "but we need version >= $perl_version";
+	}
+
+	# Make sure we have a new enough MakeMaker
 	require ExtUtils::MakeMaker;
 
-	# MakeMaker can complain about module versions that include
-	# an underscore, even though its own version may contain one!
-	# Hence the funny regexp to get rid of it.  See RT #35800
-	# for details.
+	if ( $perl_version and $self->_cmp($perl_version, '5.006') >= 0 ) {
+		# MakeMaker can complain about module versions that include
+		# an underscore, even though its own version may contain one!
+		# Hence the funny regexp to get rid of it.  See RT #35800
+		# for details.
+		$self->build_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
+		$self->configure_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
+	} else {
+		# Allow legacy-compatibility with 5.005 by depending on the
+		# most recent EU:MM that supported 5.005.
+		$self->build_requires( 'ExtUtils::MakeMaker' => 6.42 );
+		$self->configure_requires( 'ExtUtils::MakeMaker' => 6.42 );
+	}
 
-	$self->configure_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
-
-	# Generate the
+	# Generate the MakeMaker params
 	my $args = $self->makemaker_args;
 	$args->{DISTNAME} = $self->name;
 	$args->{NAME}     = $self->module_name || $self->name;
@@ -133,7 +148,7 @@ sub write {
 	if ( $self->tests ) {
 		$args->{test} = { TESTS => $self->tests };
 	}
-	if ($] >= 5.005) {
+	if ( $] >= 5.005 ) {
 		$args->{ABSTRACT} = $self->abstract;
 		$args->{AUTHOR}   = $self->author;
 	}
@@ -147,7 +162,7 @@ sub write {
 		delete $args->{SIGN};
 	}
 
-	# merge both kinds of requires into prereq_pm
+	# Merge both kinds of requires into prereq_pm
 	my $prereq = ($args->{PREREQ_PM} ||= {});
 	%$prereq = ( %$prereq,
 		map { @$_ }
@@ -208,17 +223,11 @@ sub fix_up_makefile {
 	my $makefile = do { local $/; <MAKEFILE> };
 	close MAKEFILE or die $!;
 
-	my @I_dirs = $self->_find_extra_inc;
-	my $I_list = join(", ", map { qq{'$_'} } @I_dirs);
-	my $I_flags = join(" ", map { qq{-I$_} } @I_dirs);
-	my $I_flags_quoted = join(" ", map { qq{"-I$_"} } @I_dirs);
-	$makefile =~ s/\b(test_harness\(\$\(TEST_VERBOSE\), )/$1$I_list, /;
-	# don't know why this isn't quoted but it used to be just -Ilib
-	# so $I_flags does it the same way -- dagolden, 2009-04-07
-	$makefile =~ s/( -I\$\(INST_ARCHLIB\))/ $I_flags$1/g;
-	$makefile =~ s/( "-I\$\(INST_LIB\)")/ $I_flags_quoted$1/g;
-	$makefile =~ s/^(FULLPERL = .*)/$1 $I_flags_quoted/m;
-	$makefile =~ s/^(PERL = .*)/$1 $I_flags_quoted/m;
+	$makefile =~ s/\b(test_harness\(\$\(TEST_VERBOSE\), )/$1'inc', /;
+	$makefile =~ s/( -I\$\(INST_ARCHLIB\))/ -Iinc$1/g;
+	$makefile =~ s/( "-I\$\(INST_LIB\)")/ "-Iinc"$1/g;
+	$makefile =~ s/^(FULLPERL = .*)/$1 "-Iinc"/m;
+	$makefile =~ s/^(PERL = .*)/$1 "-Iinc"/m;
 
 	# Module::Install will never be used to build the Core Perl
 	# Sometimes PERL_LIB and PERL_ARCHLIB get written anyway, which breaks
@@ -252,19 +261,8 @@ sub postamble {
 	$self->{postamble}
 }
 
-sub _find_extra_inc {
-	my ($self) = @_;
-	# Adapted from Module::Build::Base
-	my $quote = $^O eq 'MSWin32' ? q{"} : q{'};
-	my @default_inc = qx/$^X -le $quote print for \@INC $quote/;
-	chomp @default_inc;
-	my %seen;
-	$seen{$_}++ for @default_inc;
-	return grep { !$seen{$_}++ } @INC;
-}
-
 1;
 
 __END__
 
-#line 396
+#line 394

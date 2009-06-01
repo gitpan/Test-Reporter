@@ -4,12 +4,13 @@ author:
   - 'David A. Golden <dagolden@cpan.org>'
 build_requires:
   Data::Dumper: 0
+  ExtUtils::MakeMaker: 6.42
   File::Find: 0
   Test::More: 0.47
 configure_requires:
-  ExtUtils::MakeMaker: 6.48
+  ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.81'
+generated_by: 'Module::Install version 0.91'
 license: http://dev.perl.org/licenses/
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -31,10 +32,10 @@ requires:
   Time::Local: 0
   base: 0
   constant: 0
-  perl: 5.6.0
+  perl: 5.005
 resources:
   bugtracker: http://code.google.com/p/test-reporter/issues/list
   homepage: http://code.google.com/p/test-reporter/
   license: http://dev.perl.org/licenses/
   repository: git://github.com/dagolden/test-reporter.git
-version: 1.53_03
+version: 1.54

@@ -1,8 +1,16 @@
+# 
+# This file is part of Test-Reporter
+# 
+# This software is copyright (c) 2010 by Authors and Contributors.
+# 
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+# 
 use strict;
 BEGIN{ if (not $] < 5.006) { require warnings; warnings->import } }
 package Test::Reporter::Transport;
 use vars qw/$VERSION/;
-$VERSION = '1.54';
+$VERSION = '1.55';
 $VERSION = eval $VERSION;
 
 sub new     { die "Not implemented" }
@@ -11,11 +19,17 @@ sub send    { die "Not implemented" }
 
 1;
 
-__END__
+
+
+=pod
 
 =head1 NAME
 
-Test::Reporter::Transport - base class for Test::Reporter transports
+Test::Reporter::Transport
+
+=head1 VERSION
+
+version 1.55
 
 =head1 SYNOPSIS
 
@@ -33,6 +47,10 @@ transmitted to the CPAN Testers mailing list.
 This module is an abstract base class that define an API for
 Test::Reporter::Transport subclasses.  Individual subclasses MUST 
 implement the methods described below.
+
+=head1 NAME
+
+Test::Reporter::Transport - base class for Test::Reporter transports
 
 =head1 USAGE
 
@@ -74,7 +92,7 @@ meanings.
 =head2 new
 
     my $sender = $subclass->new( @args );
-    
+
 The C<new> method is the object constructor.  It MAY take a list of any
 necessary configuration options.  It MUST return a transport object if one
 is successfully created or undef if the object can not be created. 
@@ -88,31 +106,25 @@ MUST return true if the report is successfully sent.  It SHOULD die with a
 message describing the failure if a report cannot be sent.  It MUST NOT return
 a true value if the report cannot be sent.  
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-=over
+  Adam J. Foxson <afoxson@pobox.com>
+  David Golden <dagolden@cpan.org>
+  Kirrily "Skud" Robert <skud@cpan.org>
+  Ricardo Signes <rjbs@cpan.org>
+  Richard Soderberg <rsod@cpan.org>
+  Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
-=item *
+=head1 COPYRIGHT AND LICENSE
 
-David A. Golden (DAGOLDEN)
+This software is copyright (c) 2010 by Authors and Contributors.
 
-=item *
-
-Ricardo Signes (RJBS)
-
-=back
-
-=head1 COPYRIGHT
-
- Copyright (C) 2008 David A. Golden
- Copyright (C) 2008 Ricardo Signes
-
- All rights reserved.
-
-=head1 LICENSE
-
-This program is free software; you may redistribute it
-and/or modify it under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+
+__END__
+
 

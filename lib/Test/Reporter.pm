@@ -1,22 +1,11 @@
-# Test::Reporter - sends test results to cpan-testers@perl.org
-#
-# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Adam J. Foxson.
-# Copyright (C) 2008 David A. Golden
-# Copyright (C) 2008 Ricardo Signes
-# Copyright (C) 2004, 2005 Richard Soderberg.
-# All rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the same terms as Perl itself.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+# 
+# This file is part of Test-Reporter
+# 
+# This software is copyright (c) 2010 by Authors and Contributors.
+# 
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+# 
 package Test::Reporter;
 use 5.005;
 use strict;
@@ -34,7 +23,7 @@ use constant FAKE_NO_NET_DNS => 0;    # for debugging only
 use constant FAKE_NO_NET_DOMAIN => 0; # for debugging only
 use constant FAKE_NO_MAIL_SEND => 0;  # for debugging only
 
-$VERSION = '1.54';
+$VERSION = '1.55';
 
 local $^W = 1;
 
@@ -86,6 +75,11 @@ sub new {
     $self->_get_mx(@_) if $self->_have_net_dns();
 
     return $self;
+}
+
+sub debug {
+    my $self = shift;
+    return $self->{_debug};
 }
 
 sub _get_mx {
@@ -297,6 +291,7 @@ sub write {
     my $distribution = $self->distribution();
     my $grade = $self->grade();
     my $dir = $self->dir() || cwd;
+    my $distfile = $self->{_distfile} || '';
 
     return unless $self->_verify();
 
@@ -322,6 +317,9 @@ sub write {
         open $fh, ">$file" or die __PACKAGE__, ": Can't open report file '$file': $!";
     }
     print $fh "From: $from\n";
+    if ($distfile ne '') {
+      print $fh "X-Test-Reporter-Distfile: $distfile\n";
+    }
     print $fh "Subject: $subject\n";
     print $fh "Report: $report";
     unless ($_[0]) {
@@ -337,6 +335,9 @@ sub read {
     my ($self, $file) = @_;
     warn __PACKAGE__, ": read\n" if $self->debug();
 
+    # unlock these; if not locked later, we have a parse error
+    $self->{_report_lock} = $self->{_subject_lock} = 0;
+
     my $buffer;
 
     {
@@ -346,18 +347,36 @@ sub read {
         close REPORT or die __PACKAGE__, ": Can't close report file '$file': $!";
     }
 
-    if (my ($from, $subject, $report) = $buffer =~ /^From:\s(.+)Subject:\s(.+)Report:\s(.+)$/s) {
-        my ($grade, $distribution) = (split /\s/, $subject)[0,1];
-        chomp($from);
-        chomp($subject);
-        $self->{_from} = $from;
-        $self->{_subject} = $subject;
-        $self->{_report} = $report;
-        $self->{_grade} = lc $grade;
-        $self->{_distribution} = $distribution;
-        $self->{_subject_lock} = 1;
-        $self->{_report_lock} = 1;
-    } else {
+    # parse out headers
+    foreach my $line (split(/\n/, $buffer)) {
+      if ($line =~ /^(.+):\s(.+)$/) {
+        my ($header, $content) = ($1, $2);
+        if ($header eq "From") {
+          $self->{_from} = $content;
+        } elsif ($header eq "Subject") {
+          $self->{_subject} = $content;
+          my ($grade, $distribution) = (split /\s/, $content)[0,1];
+          $self->{_grade} = lc $grade;
+          $self->{_distribution} = $distribution;
+          $self->{_subject_lock} = 1;
+        } elsif ($header eq "X-Test-Reporter-Distfile") {
+          $self->{_distfile} = $content;
+        } elsif ($header eq "Report") {
+          last;
+        }
+      }
+    }
+
+    # parse out body
+    if ( $self->{_from} && $self->{_subject} ) {
+      ($self->{_report}) = ($buffer =~ /^.+?Report:\s(.+)$/s);
+      my ($perlv) = $self->{_report} =~ /(^Summary of my perl5.*)\z/ms;
+      $self->{_myconfig} = $perlv if $perlv;
+      $self->{_report_lock} = 1;
+    }
+
+    # check that the full report was parsed
+    if ( ! $self->{_report_lock} ) {
         die __PACKAGE__, ": Failed to parse report file '$file'\n";
     }
 
@@ -712,11 +731,17 @@ sub _is_a_perl_release {
 # need a true value
 1;
 
-__END__
+
+
+=pod
 
 =head1 NAME
 
-Test::Reporter - sends test results to cpan-testers@perl.org
+Test::Reporter
+
+=head1 VERSION
+
+version 1.55
 
 =head1 SYNOPSIS
 
@@ -754,6 +779,10 @@ Test::Reporter - sends test results to cpan-testers@perl.org
 Test::Reporter reports the test results of any given distribution to the CPAN
 Testers project. Test::Reporter has wide support for various perl5's and
 platforms. 
+
+=head1 NAME
+
+Test::Reporter - sends test results to cpan-testers@perl.org
 
 =head1 METHODS
 
@@ -1070,25 +1099,24 @@ This is optional.  It provides a web API for the 'HTTP' transport method.
 
 =head1 AUTHORS
 
- Adam J. Foxson <afoxson@pobox.com>
- David Golden <dagolden@cpan.org>
- Kirrily "Skud" Robert <skud@cpan.org>
- Ricardo Signes <rjbs@cpan.org>
- Richard Soderberg <rsod@cpan.org>
- Kurt Starsinic <Kurt.Starsinic@isinet.com>
+  Adam J. Foxson <afoxson@pobox.com>
+  David Golden <dagolden@cpan.org>
+  Kirrily "Skud" Robert <skud@cpan.org>
+  Ricardo Signes <rjbs@cpan.org>
+  Richard Soderberg <rsod@cpan.org>
+  Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
- Copyright (C) 2008-2009 David A. Golden.
- Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Adam J. Foxson.
- Copyright (C) 2004, 2005 Richard Soderberg.
- All rights reserved.
+This software is copyright (c) 2010 by Authors and Contributors.
 
-=head1 LICENSE
-
-This program is free software; you may redistribute it
-and/or modify it under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+
+__END__
+
 
 1;

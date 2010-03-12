@@ -1,5 +1,8 @@
 NAME
-    Test::Reporter - sends test results to cpan-testers@perl.org
+    Test::Reporter
+
+VERSION
+    version 1.55
 
 SYNOPSIS
       use Test::Reporter;
@@ -33,58 +36,11 @@ SYNOPSIS
 
 DESCRIPTION
     Test::Reporter reports the test results of any given distribution to the
-    CPAN Testers. Test::Reporter has wide support for various perl5's and
-    platforms. For further information visit the below links:
+    CPAN Testers project. Test::Reporter has wide support for various
+    perl5's and platforms.
 
-    *   <http://www.cpantesters.org/>
-
-        CPAN Testers reports (new site)
-
-    *   <http://cpantest.grango.org/>
-
-        The new CPAN Testers Wiki (thanks Barbie!)
-
-    *   <http://lists.cpan.org/showlist.cgi?name=cpan-testers>
-
-        The cpan-testers mailing list
-
-    Test::Reporter itself--as a project--also has several links for your
-    visiting enjoyment:
-
-    *   <http://code.google.com/p/test-reporter/>
-
-        Test::Reporter's master project page
-
-    *   <http://groups.google.com/group/test-reporter>
-
-        Discussion group for Test::Reporter
-
-    *   <http://code.google.com/p/test-reporter/w/list>
-
-        The Wiki for Test::Reporter
-
-    *   <http://eclipse.resort.org/git/gitweb.cgi?p=test-reporter.git>
-
-        Test::Reporter's public git source code repository.
-
-    *   <http://search.cpan.org/dist/Test-Reporter/>
-
-        Test::Reporter on CPAN
-
-    *   <http://code.google.com/p/test-reporter/issues/list>
-
-        UNFORTUNATELY, WE ARE UNABLE TO ACCEPT TICKETS FILED WITH RT.
-
-        Please file all bug reports and enhancement requests at our Google
-        Code issue tracker. Thank you for your support and understanding.
-
-    *   <http://backpan.cpan.org/authors/id/F/FO/FOX/>
-
-    *   <http://backpan.cpan.org/authors/id/A/AF/AFOXSON/>
-
-        If you happen to--for some strange reason--be looking for primordial
-        versions of Test::Reporter, you can almost certainly find them at
-        the above 2 links.
+NAME
+    Test::Reporter - sends test results to cpan-testers@perl.org
 
 METHODS
     *   address
@@ -290,8 +246,11 @@ METHODS
 
         On the machine you are submitting from:
 
+          # wrap in an opendir if you've a lot to submit
           my $reporter;
-          $reporter = Test::Reporter->new()->read('pass.Test-Reporter-1.16.i686-linux.2.2.16.1046685296.14961.rpt')->send() || die $reporter->errstr(); # wrap in an opendir if you've a lot to submit
+          $reporter = Test::Reporter->new()->read(
+            'pass.Test-Reporter-1.16.i686-linux.2.2.16.1046685296.14961.rpt'
+          )->send() || die $reporter->errstr();
 
         write() also accepts an optional filehandle argument:
 
@@ -304,17 +263,57 @@ CAVEATS
     email domain. Setting the MAILDOMAIN environment variable will avoid
     this delay.
 
-COPYRIGHT
-     Copyright (C) 2008 David A. Golden.
-     Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Adam J. Foxson.
-     Copyright (C) 2004, 2005 Richard Soderberg.
-     All rights reserved.
-
-LICENSE
-    This program is free software; you may redistribute it and/or modify it
-    under the same terms as Perl itself.
-
 SEE ALSO
+    For more about CPAN Testers:
+
+    *   <http://www.cpantesters.org/>
+
+        CPAN Testers reports
+
+    *   <http://wiki.cpantesters.org/>
+
+        CPAN Testers wiki
+
+    Test::Reporter itself--as a project--also has several links for your
+    visiting enjoyment:
+
+    *   <http://code.google.com/p/test-reporter/>
+
+        Test::Reporter's master project page
+
+    *   <http://groups.google.com/group/test-reporter>
+
+        Discussion group for Test::Reporter
+
+    *   <http://code.google.com/p/test-reporter/w/list>
+
+        The Wiki for Test::Reporter
+
+    *   <http://github.org/dagolden/test-reporter>
+
+        Test::Reporter's public git source code repository.
+
+    *   <http://search.cpan.org/dist/Test-Reporter/>
+
+        Test::Reporter on CPAN
+
+    *   <http://code.google.com/p/test-reporter/issues/list>
+
+        UNFORTUNATELY, WE ARE UNABLE TO ACCEPT TICKETS FILED WITH RT.
+
+        Please file all bug reports and enhancement requests at our Google
+        Code issue tracker. Thank you for your support and understanding.
+
+    *   <http://backpan.cpan.org/authors/id/F/FO/FOX/>
+
+    *   <http://backpan.cpan.org/authors/id/A/AF/AFOXSON/>
+
+        If you happen to--for some strange reason--be looking for primordial
+        versions of Test::Reporter, you can almost certainly find them at
+        the above 2 links.
+
+    Related Perl modules:
+
     *   perl
 
     *   Config
@@ -344,10 +343,16 @@ SEE ALSO
         method.
 
 AUTHORS
-     Adam J. Foxson <afoxson@pobox.com>
-     David Golden <dagolden@cpan.org>
-     Kirrily "Skud" Robert <skud@cpan.org>
-     Ricardo Signes <rjbs@cpan.org>
-     Richard Soderberg <rsod@cpan.org>
-     Kurt Starsinic <Kurt.Starsinic@isinet.com>
+      Adam J. Foxson <afoxson@pobox.com>
+      David Golden <dagolden@cpan.org>
+      Kirrily "Skud" Robert <skud@cpan.org>
+      Ricardo Signes <rjbs@cpan.org>
+      Richard Soderberg <rsod@cpan.org>
+      Kurt Starsinic <Kurt.Starsinic@isinet.com>
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2010 by Authors and Contributors.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
 

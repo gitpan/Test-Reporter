@@ -1,25 +1,51 @@
-use 5.005;
-use inc::Module::Install;
-author          'David A. Golden <dagolden@cpan.org>';
-all_from        'lib/Test/Reporter.pm';
-requires        'Carp' => 0;
-requires        'Cwd' => 0;
-requires        'File::Temp' => 0;
-requires        'FileHandle' => 0;
-requires        'Net::SMTP' => 0;
-requires        'Sys::Hostname' => 0;
-requires        'Time::Local' => 0;
-requires        'base' => 0;
-requires        'constant' => 0;
-build_requires  'Data::Dumper' => 0;
-build_requires  'File::Find' => 0;
-build_requires  'Test::More' => 0.47;
-no_index        directory => 'xt';
-bugtracker      'http://code.google.com/p/test-reporter/issues/list';
-homepage        'http://code.google.com/p/test-reporter/';
-license         'http://dev.perl.org/licenses/';
-repository      'git://github.com/dagolden/test-reporter.git';
-extra_tests;
 
-WriteAll;
+use strict;
+use warnings;
+
+
+
+use ExtUtils::MakeMaker 6.11;
+
+
+
+my %WriteMakefileArgs = (
+                       'test' => {
+                                   'TESTS' => 't/*.t'
+                                 },
+                       'NAME' => 'Test::Reporter',
+                       'DISTNAME' => 'Test-Reporter',
+                       'CONFIGURE_REQUIRES' => {
+                                                 'ExtUtils::MakeMaker' => '6.11'
+                                               },
+                       'AUTHOR' => 'Adam J. Foxson <afoxson@pobox.com>, David Golden <dagolden@cpan.org>, Kirrily "Skud" Robert <skud@cpan.org>, Ricardo Signes <rjbs@cpan.org>, Richard Soderberg <rsod@cpan.org>, Kurt Starsinic <Kurt.Starsinic@isinet.com>',
+                       'BUILD_REQUIRES' => {},
+                       'ABSTRACT' => 'sends test results to cpan-testers@perl.org',
+                       'EXE_FILES' => [
+                                        'bin/cpantest'
+                                      ],
+                       'VERSION' => '1.55',
+                       'PREREQ_PM' => {
+                                        'base' => '0',
+                                        'Data::Dumper' => '0',
+                                        'constant' => '0',
+                                        'FileHandle' => '0',
+                                        'Carp' => '0',
+                                        'Test::More' => '0.88',
+                                        'Net::SMTP' => '0',
+                                        'File::Find' => '0',
+                                        'File::Temp' => '0',
+                                        'Time::Local' => '0',
+                                        'Cwd' => '0',
+                                        'Sys::Hostname' => '0'
+                                      },
+                       'LICENSE' => 'perl'
+                     );
+
+
+delete $WriteMakefileArgs{LICENSE}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.31) };
+
+WriteMakefile(%WriteMakefileArgs);
+
+
 

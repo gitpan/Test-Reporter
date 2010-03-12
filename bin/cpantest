@@ -1,4 +1,12 @@
 #!/usr/bin/perl -w
+# 
+# This file is part of Test-Reporter
+# 
+# This software is copyright (c) 2010 by Authors and Contributors.
+# 
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+# 
 
 # cpantest - sends test results to cpan-testers@perl.org
 #
@@ -30,7 +38,7 @@ use vars qw(
     $Transport
 );
 
-$VERSION       = '1.54';
+$VERSION       = '1.55';
 ($Tempfile, $Report) = File::Temp::tempfile(UNLINK => 1);
 $Reporter      = Test::Reporter->new();
 %Grades        = (

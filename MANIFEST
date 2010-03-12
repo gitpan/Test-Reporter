@@ -1,15 +1,13 @@
-bin/cpantest
-Changes
 COPYING
-inc/Module/Install.pm
-inc/Module/Install/Base.pm
-inc/Module/Install/Can.pm
-inc/Module/Install/Fetch.pm
-inc/Module/Install/Makefile.pm
-inc/Module/Install/Metadata.pm
-inc/Module/Install/Win32.pm
-inc/Module/Install/WriteAll.pm
+Changes
 INSTALL
+LICENSE
+MANIFEST
+MANIFEST.SKIP
+META.yml
+Makefile.PL
+README
+bin/cpantest
 lib/Test/Reporter.pm
 lib/Test/Reporter/Transport.pm
 lib/Test/Reporter/Transport/File.pm
@@ -17,11 +15,7 @@ lib/Test/Reporter/Transport/HTTPGateway.pm
 lib/Test/Reporter/Transport/Mail/Send.pm
 lib/Test/Reporter/Transport/Net/SMTP.pm
 lib/Test/Reporter/Transport/Net/SMTP/TLS.pm
-Makefile.PL
-MANIFEST			This list of files
-MANIFEST.SKIP
-META.yml
-README
+t/00-compile.t
 t/1-reporter.t
 t/2-http-transport.t
 t/3-file-transport.t
@@ -29,3 +23,6 @@ t/4-net-smtp-transport.t
 t/5-net-smtp-tls-transport.t
 xt/pod-coverage.t
 xt/pod.t
+xt/release/meta-yaml.t
+xt/release/pod-coverage.t
+xt/release/pod-syntax.t

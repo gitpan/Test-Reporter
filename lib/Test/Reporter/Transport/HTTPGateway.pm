@@ -1,9 +1,17 @@
+# 
+# This file is part of Test-Reporter
+# 
+# This software is copyright (c) 2010 by Authors and Contributors.
+# 
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+# 
 use strict;
 BEGIN{ if (not $] < 5.006) { require warnings; warnings->import } }
 package Test::Reporter::Transport::HTTPGateway;
 use base 'Test::Reporter::Transport';
 use vars qw/$VERSION/;
-$VERSION = '1.54';
+$VERSION = '1.55';
 $VERSION = eval $VERSION;
 
 use LWP::UserAgent;
@@ -48,11 +56,17 @@ sub send {
 
 1;
 
-__END__
+
+
+=pod
 
 =head1 NAME
 
-Test::Reporter::Transport::HTTPGateway - HTTP transport for Test::Reporter
+Test::Reporter::Transport::HTTPGateway
+
+=head1 VERSION
+
+version 1.55
 
 =head1 SYNOPSIS
 
@@ -65,6 +79,10 @@ Test::Reporter::Transport::HTTPGateway - HTTP transport for Test::Reporter
 
 This module transmits a Test::Reporter report via HTTP to a
 L<Test::Reporter::HTTPGateway> server (or something with an equivalent API).
+
+=head1 NAME
+
+Test::Reporter::Transport::HTTPGateway - HTTP transport for Test::Reporter
 
 =head1 USAGE
 
@@ -89,7 +107,7 @@ These methods are only for internal use by Test::Reporter.
     my $sender = Test::Reporter::Transport::HTTPGateway->new( 
         @args 
     );
-    
+
 The C<new> method is the object constructor.   
 
 =head2 send
@@ -98,31 +116,25 @@ The C<new> method is the object constructor.
 
 The C<send> method transmits the report.  
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-=over
+  Adam J. Foxson <afoxson@pobox.com>
+  David Golden <dagolden@cpan.org>
+  Kirrily "Skud" Robert <skud@cpan.org>
+  Ricardo Signes <rjbs@cpan.org>
+  Richard Soderberg <rsod@cpan.org>
+  Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
-=item *
+=head1 COPYRIGHT AND LICENSE
 
-David A. Golden (DAGOLDEN)
+This software is copyright (c) 2010 by Authors and Contributors.
 
-=item *
-
-Ricardo Signes (RJBS)
-
-=back
-
-=head1 COPYRIGHT
-
- Copyright (C) 2008 David A. Golden
- Copyright (C) 2008 Ricardo Signes
-
- All rights reserved.
-
-=head1 LICENSE
-
-This program is free software; you may redistribute it and/or modify it under
-the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+
+__END__
+
 

@@ -11,7 +11,7 @@ BEGIN{ if (not $] < 5.006) { require warnings; warnings->import } }
 package Test::Reporter::Transport::HTTPGateway;
 use base 'Test::Reporter::Transport';
 use vars qw/$VERSION/;
-$VERSION = '1.55';
+$VERSION = '1.56';
 $VERSION = eval $VERSION;
 
 use LWP::UserAgent;
@@ -66,7 +66,7 @@ Test::Reporter::Transport::HTTPGateway
 
 =head1 VERSION
 
-version 1.55
+version 1.56
 
 =head1 SYNOPSIS
 

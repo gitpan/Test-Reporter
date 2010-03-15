@@ -21,6 +21,7 @@ t/2-http-transport.t
 t/3-file-transport.t
 t/4-net-smtp-transport.t
 t/5-net-smtp-tls-transport.t
+t/6-write-read-crlf.t
 xt/pod-coverage.t
 xt/pod.t
 xt/release/meta-yaml.t

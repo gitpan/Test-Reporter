@@ -2,7 +2,7 @@ NAME
     Test::Reporter
 
 VERSION
-    version 1.55
+    version 1.56
 
 SYNOPSIS
       use Test::Reporter;

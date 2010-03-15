@@ -3,6 +3,11 @@ Revision history for Perl extension Test::Reporter.
 For the complete changelog, visit:
 http://github.com/dagolden/test-reporter/commits/master
 
+1.56      2010-03-14 23:26:00 EST5EDT
+
+        - Convert line endings during read() [Issue identified
+          by Serguei Trouchelle]
+
 1.55      2010-03-12 11:44:05 EST5EDT
 
         - Preserve distfile through write() and read() 

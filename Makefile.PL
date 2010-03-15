@@ -23,7 +23,7 @@ my %WriteMakefileArgs = (
                        'EXE_FILES' => [
                                         'bin/cpantest'
                                       ],
-                       'VERSION' => '1.55',
+                       'VERSION' => '1.56',
                        'PREREQ_PM' => {
                                         'base' => '0',
                                         'Data::Dumper' => '0',

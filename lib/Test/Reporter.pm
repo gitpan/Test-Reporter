@@ -23,7 +23,7 @@ use constant FAKE_NO_NET_DNS => 0;    # for debugging only
 use constant FAKE_NO_NET_DOMAIN => 0; # for debugging only
 use constant FAKE_NO_MAIL_SEND => 0;  # for debugging only
 
-$VERSION = '1.55';
+$VERSION = '1.56';
 
 local $^W = 1;
 
@@ -346,6 +346,12 @@ sub read {
         $buffer = <REPORT>;
         close REPORT or die __PACKAGE__, ": Can't close report file '$file': $!";
     }
+
+    # convert line endings
+    my $CR   = "\015";
+    my $LF   = "\012";
+    $buffer =~ s{$CR$LF}{$LF}g;
+    $buffer =~ s{$CR}{$LF}g;
 
     # parse out headers
     foreach my $line (split(/\n/, $buffer)) {
@@ -741,7 +747,7 @@ Test::Reporter
 
 =head1 VERSION
 
-version 1.55
+version 1.56
 
 =head1 SYNOPSIS
 

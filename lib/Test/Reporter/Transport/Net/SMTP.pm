@@ -11,7 +11,7 @@ BEGIN{ if (not $] < 5.006) { require warnings; warnings->import } }
 package Test::Reporter::Transport::Net::SMTP;
 use base 'Test::Reporter::Transport';
 use vars qw/$VERSION/;
-$VERSION = '1.55';
+$VERSION = '1.56';
 $VERSION = eval $VERSION;
 
 sub new {
@@ -255,7 +255,7 @@ Test::Reporter::Transport::Net::SMTP
 
 =head1 VERSION
 
-version 1.55
+version 1.56
 
 =head1 SYNOPSIS
 

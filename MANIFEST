@@ -8,6 +8,7 @@ META.yml
 Makefile.PL
 README
 bin/cpantest
+dist.ini
 lib/Test/Reporter.pm
 lib/Test/Reporter/Transport.pm
 lib/Test/Reporter/Transport/File.pm
@@ -22,8 +23,4 @@ t/3-file-transport.t
 t/4-net-smtp-transport.t
 t/5-net-smtp-tls-transport.t
 t/6-write-read-crlf.t
-xt/pod-coverage.t
-xt/pod.t
 xt/release/meta-yaml.t
-xt/release/pod-coverage.t
-xt/release/pod-syntax.t

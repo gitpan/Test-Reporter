@@ -3,6 +3,16 @@ Revision history for Perl extension Test::Reporter.
 For the complete changelog, visit:
 http://github.com/dagolden/test-reporter/commits/master
 
+1.57      2010-03-26 00:13:18 EST5EDT
+
+        - Includes full 'perl -V' output, not just Config::mychanges
+
+        - Adds new 'X-Test-Reporter-Perl' header with Perl version 
+          and optional "RCx" suffix to positively identify tests from
+          RC Perls
+
+        - Minimum perl version is now 5.006, matching the rest of the Perl toolchain
+
 1.56      2010-03-14 23:26:00 EST5EDT
 
         - Convert line endings during read() [Issue identified
@@ -14,6 +24,8 @@ http://github.com/dagolden/test-reporter/commits/master
           [patch by Dan Collins]
 
         - Regenerate _myconfig data during read() method
+
+        - Switched to Dist::Zilla for release management
 
 1.54 Sun May 31 21:39:12 EDT 2009
 

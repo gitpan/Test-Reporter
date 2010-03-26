@@ -1,8 +1,8 @@
 NAME
-    Test::Reporter
+    Test::Reporter - sends test results to cpan-testers@perl.org
 
 VERSION
-    version 1.56
+    version 1.57
 
 SYNOPSIS
       use Test::Reporter;
@@ -38,9 +38,6 @@ DESCRIPTION
     Test::Reporter reports the test results of any given distribution to the
     CPAN Testers project. Test::Reporter has wide support for various
     perl5's and platforms.
-
-NAME
-    Test::Reporter - sends test results to cpan-testers@perl.org
 
 METHODS
     *   address

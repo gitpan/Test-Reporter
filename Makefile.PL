@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-
+ BEGIN { require 5.006; } 
 
 use ExtUtils::MakeMaker 6.11;
 
@@ -23,7 +23,7 @@ my %WriteMakefileArgs = (
                        'EXE_FILES' => [
                                         'bin/cpantest'
                                       ],
-                       'VERSION' => '1.56',
+                       'VERSION' => '1.57',
                        'PREREQ_PM' => {
                                         'base' => '0',
                                         'Data::Dumper' => '0',

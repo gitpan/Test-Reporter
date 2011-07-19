@@ -1,16 +1,8 @@
 #!/usr/bin/perl -w
-# 
-# This file is part of Test-Reporter
-# 
-# This software is copyright (c) 2010 by Authors and Contributors.
-# 
-# This is free software; you can redistribute it and/or modify it under
-# the same terms as the Perl 5 programming language system itself.
-# 
 
 use strict;
 use FileHandle;
-use Test::More;
+use Test::More 0.88;
 use Test::Reporter;
 use Data::Dumper;
 
@@ -74,3 +66,5 @@ is($reporter->from, $orig_from);
 is($reporter->report, $orig_report);
 
 unlink $file;
+
+done_testing;

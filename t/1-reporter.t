@@ -1,22 +1,12 @@
 #!/usr/bin/perl -w
-# 
-# This file is part of Test-Reporter
-# 
-# This software is copyright (c) 2010 by Authors and Contributors.
-# 
-# This is free software; you can redistribute it and/or modify it under
-# the same terms as the Perl 5 programming language system itself.
-# 
 
 use strict;
 use FileHandle;
-use Test::More;
+use Test::More 0.88;
 use Test::Reporter;
 use Data::Dumper;
 
 $Test::Reporter::VERSION ||= 999; # dzil will set it for us on release
-
-plan tests => 129;
 
 my $distro = "Foo-Bar-1.23";
 my $distfile = "AUTHOR/" . $distro . ".tar.gz";
@@ -233,42 +223,19 @@ like($reporter->message_id, '/^<\d+\.[^.]+\.\d+@[^>]+>$/');
 
 undef $reporter;
 
+# Default transport is Null
 $reporter = Test::Reporter->new();
 isa_ok($reporter, 'Test::Reporter');
-
-is($reporter->transport(), 'Net::SMTP');
-is($reporter->{_transport}, 'Net::SMTP');
-
-undef $reporter;
-$reporter = Test::Reporter->new();
-isa_ok($reporter, 'Test::Reporter');
-is($reporter->transport('Net::SMTP'), 'Net::SMTP');
-is($reporter->{_transport}, 'Net::SMTP');
+is($reporter->transport(), 'Null');
+is($reporter->{_transport}, 'Null');
 
 # Arguments stored in _tls
-$reporter->transport('Net::SMTP', Username => 'LarryW', Password => 'JAPH');
+$reporter->transport('File', dir => "/foo");
 my %tls_args = $reporter->transport_args();
-is( $tls_args{Username}, 'LarryW' );
-is( $tls_args{Password}, 'JAPH' );
+is( $tls_args{dir}, '/foo' );
 
 eval { $reporter->transport('Invalid'); };
 like($@, q{/could not load 'Test::Reporter::Transport::Invalid'/})
     or print "# $@\n";
 
-{
-    local $Test::Reporter::Send = 1;
-    local $INC{"Mail/Send.pm"} = 1; # pretend we have Mail::Send
-    my @xport_args = ('foo', 'bar', 'baz', 'wibble', 'plink!');
-    my $xport_args = \@xport_args;
-    is($reporter->transport('Mail::Send', $xport_args), 'Mail::Send');
-    is( join(" ", $reporter->transport_args), 
-        join(" ", @xport_args)
-    );
-}
-
-undef $reporter;
-
-$reporter = Test::Reporter->new(transport => 'Net::SMTP');
-isa_ok($reporter, 'Test::Reporter');
-is($reporter->transport, 'Net::SMTP');
-is($reporter->{_transport}, 'Net::SMTP');
+done_testing;

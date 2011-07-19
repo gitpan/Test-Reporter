@@ -1,16 +1,7 @@
-# 
-# This file is part of Test-Reporter
-# 
-# This software is copyright (c) 2010 by Authors and Contributors.
-# 
-# This is free software; you can redistribute it and/or modify it under
-# the same terms as the Perl 5 programming language system itself.
-# 
 use strict;
 BEGIN{ if (not $] < 5.006) { require warnings; warnings->import } }
 package Test::Reporter::Transport::File;
-our $VERSION = '1.57';
-# ABSTRACT: File transport for Test::Reporter
+our $VERSION = '1.58'; # VERSION
 
 use base 'Test::Reporter::Transport';
 
@@ -31,6 +22,8 @@ sub send {
 
 1;
 
+# ABSTRACT: File transport for Test::Reporter
+
 
 
 =pod
@@ -41,7 +34,7 @@ Test::Reporter::Transport::File - File transport for Test::Reporter
 
 =head1 VERSION
 
-version 1.57
+version 1.58
 
 =head1 SYNOPSIS
 
@@ -89,16 +82,37 @@ The C<send> method transmits the report.
 
 =head1 AUTHORS
 
-  Adam J. Foxson <afoxson@pobox.com>
-  David Golden <dagolden@cpan.org>
-  Kirrily "Skud" Robert <skud@cpan.org>
-  Ricardo Signes <rjbs@cpan.org>
-  Richard Soderberg <rsod@cpan.org>
-  Kurt Starsinic <Kurt.Starsinic@isinet.com>
+=over 4
+
+=item *
+
+Adam J. Foxson <afoxson@pobox.com>
+
+=item *
+
+David Golden <dagolden@cpan.org>
+
+=item *
+
+Kirrily "Skud" Robert <skud@cpan.org>
+
+=item *
+
+Ricardo Signes <rjbs@cpan.org>
+
+=item *
+
+Richard Soderberg <rsod@cpan.org>
+
+=item *
+
+Kurt Starsinic <Kurt.Starsinic@isinet.com>
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Authors and Contributors.
+This software is copyright (c) 2011 by Authors and Contributors.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

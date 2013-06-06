@@ -9,12 +9,15 @@ author:
   - 'Kurt Starsinic <Kurt.Starsinic@isinet.com>'
 build_requires:
   Data::Dumper: 0
+  ExtUtils::MakeMaker: 0
   File::Find: 0
+  File::Spec::Functions: 0
+  List::Util: 0
   Test::More: 0.88
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.200009, CPAN::Meta::Converter version 2.110930'
+generated_by: 'Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -31,16 +34,16 @@ no_index:
 provides:
   Test::Reporter:
     file: lib/Test/Reporter.pm
-    version: 1.58
+    version: 1.59
   Test::Reporter::Transport:
     file: lib/Test/Reporter/Transport.pm
-    version: 1.58
+    version: 1.59
   Test::Reporter::Transport::File:
     file: lib/Test/Reporter/Transport/File.pm
-    version: 1.58
+    version: 1.59
   Test::Reporter::Transport::Null:
     file: lib/Test/Reporter/Transport/Null.pm
-    version: 1.58
+    version: 1.59
 requires:
   Carp: 0
   Cwd: 0
@@ -48,11 +51,16 @@ requires:
   FileHandle: 0
   Sys::Hostname: 0
   Time::Local: 0
+  base: 0
   constant: 0
   perl: 5.006
+  strict: 0
   vars: 0
+  warnings: 0
 resources:
-  bugtracker: http://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter
-  homepage: http://github.com/dagolden/test-reporter
-  repository: http://github.com/dagolden/test-reporter
-version: 1.58
+  bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter
+  homepage: https://metacpan.org/release/Test-Reporter
+  repository: git://github.com/dagolden/test-reporter.git
+version: 1.59
+x_contributors:
+  - 'Vincent Pit <perl@profvince.com>'

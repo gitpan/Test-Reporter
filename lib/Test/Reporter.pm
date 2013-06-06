@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 package Test::Reporter;
-our $VERSION = '1.58'; # VERSION
+our $VERSION = '1.59'; # VERSION
 
 use Cwd;
 use Config;
@@ -193,7 +193,7 @@ sub transport {
     my $transport = shift;
 
     my $transport_class = "Test::Reporter::Transport::$transport";
-    unless ( eval "require $transport_class; 1" ) {
+    unless ( eval "require $transport_class; 1" ) { ## no critic
         croak __PACKAGE__ . ": could not load '$transport_class'\n$@\n";
     }
 
@@ -236,9 +236,9 @@ sub edit_comments {
     my $comments;
     {
         local $/;
-        open FH, $Report or die __PACKAGE__, ": Can't open comment file '$Report': $!";
-        $comments = <FH>;
-        close FH or die __PACKAGE__, ": Can't close comment file '$Report': $!";
+        open my $fh, "<", $Report or die __PACKAGE__, ": Can't open comment file '$Report': $!";
+        $comments = <$fh>;
+        close $fh or die __PACKAGE__, ": Can't close comment file '$Report': $!";
     }
 
     chomp $comments;
@@ -319,7 +319,7 @@ sub write {
 
         warn $file if $self->debug();
         $fh = FileHandle->new();
-        open $fh, ">$file" or die __PACKAGE__, ": Can't open report file '$file': $!";
+        open $fh, ">", $file or die __PACKAGE__, ": Can't open report file '$file': $!";
     }
     print $fh "From: $from\n";
     if ($distfile ne '') {
@@ -348,9 +348,9 @@ sub read {
 
     {
         local $/;
-        open REPORT, $file or die __PACKAGE__, ": Can't open report file '$file': $!";
-        $buffer = <REPORT>;
-        close REPORT or die __PACKAGE__, ": Can't close report file '$file': $!";
+        open my $fh, "<", $file or die __PACKAGE__, ": Can't open report file '$file': $!";
+        $buffer = <$fh>;
+        close $fh or die __PACKAGE__, ": Can't close report file '$file': $!";
     }
 
     # convert line endings
@@ -522,7 +522,7 @@ sub perl_version  {
 
 sub _get_perl_V {
     my $self = shift;
-    my $perl ||= $^X;
+    my $perl = shift || $^X;
     my $q = $self->_get_sh_quote;
     my $cmdv = "$perl -V";
     if($^O eq 'VMS'){
@@ -557,7 +557,7 @@ sub AUTOLOAD {
 
     {
         no strict 'refs';
-        *$AUTOLOAD = eval $code;
+        *$AUTOLOAD = eval $code; ## no critic
     }
 
     goto &$AUTOLOAD;
@@ -640,7 +640,6 @@ sub _prompt {
         return $domain = $ENV{MAILDOMAIN};
       }
 
-      local *CF;
       local $_;
 
       my @sendmailcf = qw(
@@ -649,15 +648,15 @@ sub _prompt {
 
       my $config = (grep(-r, map("$_/sendmail.cf", @sendmailcf)))[0];
 
-      if (defined $config && open(CF, $config)) {
+      if (defined $config && open(my $cf, "<", $config)) {
           my %var;
-          while (<CF>) {
+          while (<$cf>) {
               if (my ($v, $arg) = /^D([a-zA-Z])([\w.\$\-]+)/) {
                   $arg =~ s/\$([a-zA-Z])/exists $var{$1} ? $var{$1} : '$'.$1/eg;
                   $var{$v} = $arg;
               }
           }
-          close(CF) || die $!;
+          close($cf) || die $!;
           $domain = $var{j} if defined $var{j};
           $domain = $var{M} if defined $var{M};
 
@@ -669,35 +668,33 @@ sub _prompt {
           return $domain if (defined $domain && $domain !~ /\$/);
       }
 
-      if (open(CF, "/usr/lib/smail/config")) {
-          while (<CF>) {
+      if (open(my $cf, "<", "/usr/lib/smail/config")) {
+          while (<$cf>) {
               if (/\A\s*hostnames?\s*=\s*(\S+)/) {
                   $domain = (split(/:/,$1))[0];
                   undef $domain if $^O eq 'darwin' && $domain =~ /\.local$/;
                   last if defined $domain and $domain;
               }
           }
-          close(CF) || die $!;
+          close($cf) || die $!;
 
           return $domain if defined $domain;
       }
 
       if (eval {require Net::SMTP}) {
-          my $host;
+          for my $host (qw(mailhost smtp localhost)) {
 
-              for $host (qw(mailhost smtp localhost)) {
+            # default timeout is 120, which is Very Very Long, so lower
+            # it to 5 seconds. Total slowdown will not be more than
+            # 15 seconds ( 5 x @hosts ) --kane
+            my $smtp = eval {Net::SMTP->new($host, Timeout => 5)};
 
-                  # default timeout is 120, which is Very Very Long, so lower
-                  # it to 5 seconds. Total slowdown will not be more than
-                  # 15 seconds ( 5 x @hosts ) --kane
-                  my $smtp = eval {Net::SMTP->new($host, Timeout => 5)};
-
-              if (defined $smtp) {
-                  $domain = $smtp->domain;
-                  $smtp->quit;
-                  undef $domain if $^O eq 'darwin' && $domain =~ /\.local$/;
-                  last if defined $domain and $domain;
-              }
+            if (defined $smtp) {
+                $domain = $smtp->domain;
+                $smtp->quit;
+                undef $domain if $^O eq 'darwin' && $domain =~ /\.local$/;
+                last if defined $domain and $domain;
+            }
           }
       }
 
@@ -767,9 +764,9 @@ sub _is_a_perl_release {
 
 # ABSTRACT: sends test results to cpan-testers@perl.org
 
-
-
 =pod
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -777,7 +774,7 @@ Test::Reporter - sends test results to cpan-testers@perl.org
 
 =head1 VERSION
 
-version 1.58
+version 1.59
 
 =head1 SYNOPSIS
 
@@ -1071,24 +1068,24 @@ L<CPAN Testers wiki|http://wiki.cpantesters.org/>
 
 =back
 
-=for :stopwords cpan testmatrix url annocpan anno bugtracker rt cpants kwalitee diff irc mailto metadata placeholders
+=for :stopwords cpan testmatrix url annocpan anno bugtracker rt cpants kwalitee diff irc mailto metadata placeholders metacpan
 
 =head1 SUPPORT
 
 =head2 Bugs / Feature Requests
 
-Please report any bugs or feature requests by email to C<bug-test-reporter at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter>. You will be automatically notified of any
-progress on the request by the system.
+Please report any bugs or feature requests through the issue tracker
+at L<https://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter>.
+You will be notified automatically of any progress on your issue.
 
 =head2 Source Code
 
 This is open source software.  The code repository is available for
 public review and contribution under the terms of the license.
 
-L<http://github.com/dagolden/test-reporter>
+L<https://github.com/dagolden/test-reporter>
 
-  git clone http://github.com/dagolden/test-reporter
+  git clone git://github.com/dagolden/test-reporter.git
 
 =head1 AUTHORS
 
@@ -1120,15 +1117,18 @@ Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
 =back
 
+=head1 CONTRIBUTOR
+
+Vincent Pit <perl@profvince.com>
+
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Authors and Contributors.
+This software is copyright (c) 2013 by Authors and Contributors.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
 
 __END__
 

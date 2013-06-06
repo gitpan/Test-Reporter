@@ -2,7 +2,7 @@ NAME
     Test::Reporter - sends test results to cpan-testers@perl.org
 
 VERSION
-    version 1.58
+    version 1.59
 
 SYNOPSIS
       use Test::Reporter;
@@ -254,19 +254,17 @@ SEE ALSO
 
 SUPPORT
   Bugs / Feature Requests
-    Please report any bugs or feature requests by email to
-    "bug-test-reporter at rt.cpan.org", or through the web interface at
-    <http://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter>. You
-    will be automatically notified of any progress on the request by the
-    system.
+    Please report any bugs or feature requests through the issue tracker at
+    <https://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter>. You
+    will be notified automatically of any progress on your issue.
 
   Source Code
     This is open source software. The code repository is available for
     public review and contribution under the terms of the license.
 
-    <http://github.com/dagolden/test-reporter>
+    <https://github.com/dagolden/test-reporter>
 
-      git clone http://github.com/dagolden/test-reporter
+      git clone git://github.com/dagolden/test-reporter.git
 
 AUTHORS
     *   Adam J. Foxson <afoxson@pobox.com>
@@ -281,8 +279,11 @@ AUTHORS
 
     *   Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
+CONTRIBUTOR
+    Vincent Pit <perl@profvince.com>
+
 COPYRIGHT AND LICENSE
-    This software is copyright (c) 2011 by Authors and Contributors.
+    This software is copyright (c) 2013 by Authors and Contributors.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as the Perl 5 programming language system itself.

@@ -1,7 +1,7 @@
 use strict;
 BEGIN{ if (not $] < 5.006) { require warnings; warnings->import } }
 package Test::Reporter::Transport::File;
-our $VERSION = '1.58'; # VERSION
+our $VERSION = '1.59'; # VERSION
 
 use base 'Test::Reporter::Transport';
 
@@ -24,9 +24,11 @@ sub send {
 
 # ABSTRACT: File transport for Test::Reporter
 
-
+__END__
 
 =pod
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -34,7 +36,7 @@ Test::Reporter::Transport::File - File transport for Test::Reporter
 
 =head1 VERSION
 
-version 1.58
+version 1.59
 
 =head1 SYNOPSIS
 
@@ -110,16 +112,15 @@ Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
 =back
 
+=head1 CONTRIBUTOR
+
+Vincent Pit <perl@profvince.com>
+
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Authors and Contributors.
+This software is copyright (c) 2013 by Authors and Contributors.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-
-__END__
-
-

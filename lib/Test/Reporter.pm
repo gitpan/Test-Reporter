@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 package Test::Reporter;
-our $VERSION = '1.59'; # VERSION
+our $VERSION = '1.60'; # VERSION
 
 use Cwd;
 use Config;
@@ -367,9 +367,10 @@ sub read {
           $self->{_from} = $content;
         } elsif ($header eq "Subject") {
           $self->{_subject} = $content;
-          my ($grade, $distribution) = (split /\s/, $content)[0,1];
+          my ($grade, $distribution, $archname) = (split /\s/, $content)[0..2];
           $self->{_grade} = lc $grade;
           $self->{_distribution} = $distribution;
+          $self->{_perl_version}{_archname} = $archname;
           $self->{_subject_lock} = 1;
         } elsif ($header eq "X-Test-Reporter-Distfile") {
           $self->{_distfile} = $content;
@@ -766,7 +767,7 @@ sub _is_a_perl_release {
 
 =pod
 
-=encoding utf-8
+=encoding UTF-8
 
 =head1 NAME
 
@@ -774,7 +775,7 @@ Test::Reporter - sends test results to cpan-testers@perl.org
 
 =head1 VERSION
 
-version 1.59
+version 1.60
 
 =head1 SYNOPSIS
 
@@ -782,7 +783,7 @@ version 1.59
 
   my $reporter = Test::Reporter->new(
       transport => 'File',
-      transport_args => [ dir => '/tmp' ],
+      transport_args => [ '/tmp' ],
   );
 
   $reporter->grade('pass');
@@ -793,7 +794,7 @@ version 1.59
 
   my $reporter = Test::Reporter->new(
       transport => 'File',
-      transport_args => [ dir => '/tmp' ],
+      transport_args => [ '/tmp' ],
   );
 
   $reporter->grade('fail');
@@ -806,7 +807,7 @@ version 1.59
 
   my $reporter = Test::Reporter->new(
       transport => 'File',
-      transport_args => [ dir => '/tmp' ],
+      transport_args => [ '/tmp' ],
       grade => 'fail',
       distribution => 'Mail-Freshmeat-1.20',
       from => 'whoever@wherever.net (Whoever Wherever)',
@@ -884,7 +885,7 @@ selection.  These will be passed to the constructor of the lower-level
 transport. See C<transport_args>.
 
  $reporter->transport(
-     'File', dir => '/tmp'
+     'File', '/tmp'
  );
 
 This is not designed to be an extensible platform upon which to build
@@ -1075,7 +1076,7 @@ L<CPAN Testers wiki|http://wiki.cpantesters.org/>
 =head2 Bugs / Feature Requests
 
 Please report any bugs or feature requests through the issue tracker
-at L<https://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter>.
+at L<https://github.com/cpan-testers/Test-Reporter/issues>.
 You will be notified automatically of any progress on your issue.
 
 =head2 Source Code
@@ -1083,9 +1084,9 @@ You will be notified automatically of any progress on your issue.
 This is open source software.  The code repository is available for
 public review and contribution under the terms of the license.
 
-L<https://github.com/dagolden/test-reporter>
+L<https://github.com/cpan-testers/Test-Reporter>
 
-  git clone git://github.com/dagolden/test-reporter.git
+  git clone https://github.com/cpan-testers/Test-Reporter.git
 
 =head1 AUTHORS
 
@@ -1117,9 +1118,23 @@ Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
 =back
 
-=head1 CONTRIBUTOR
+=head1 CONTRIBUTORS
+
+=over 4
+
+=item *
+
+Andreas Koenig <andk@cpan.org>
+
+=item *
+
+Tatsuhiko Miyagawa <miyagawa@bulknews.net>
+
+=item *
 
 Vincent Pit <perl@profvince.com>
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 

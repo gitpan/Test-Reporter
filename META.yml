@@ -15,9 +15,9 @@ build_requires:
   List::Util: 0
   Test::More: 0.88
 configure_requires:
-  ExtUtils::MakeMaker: 6.30
+  ExtUtils::MakeMaker: 6.17
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880'
+generated_by: 'Dist::Zilla version 5.001, CPAN::Meta::Converter version 2.132830'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -34,16 +34,21 @@ no_index:
 provides:
   Test::Reporter:
     file: lib/Test/Reporter.pm
-    version: 1.59
+    version: 1.60
   Test::Reporter::Transport:
     file: lib/Test/Reporter/Transport.pm
-    version: 1.59
+    version: 1.60
   Test::Reporter::Transport::File:
     file: lib/Test/Reporter/Transport/File.pm
-    version: 1.59
+    version: 1.60
   Test::Reporter::Transport::Null:
     file: lib/Test/Reporter/Transport/Null.pm
-    version: 1.59
+    version: 1.60
+recommends:
+  Mail::Send: 0
+  Net::DNS: 0
+  Net::Domain: 0
+  Net::SMTP: 0
 requires:
   Carp: 0
   Cwd: 0
@@ -58,9 +63,12 @@ requires:
   vars: 0
   warnings: 0
 resources:
-  bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter
-  homepage: https://metacpan.org/release/Test-Reporter
-  repository: git://github.com/dagolden/test-reporter.git
-version: 1.59
+  bugtracker: https://github.com/cpan-testers/Test-Reporter/issues
+  homepage: https://github.com/cpan-testers/Test-Reporter
+  repository: https://github.com/cpan-testers/Test-Reporter.git
+version: 1.60
+x_authority: cpan:DAGOLDEN
 x_contributors:
+  - 'Andreas Koenig <andk@cpan.org>'
+  - 'Tatsuhiko Miyagawa <miyagawa@bulknews.net>'
   - 'Vincent Pit <perl@profvince.com>'

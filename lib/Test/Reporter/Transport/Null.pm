@@ -1,7 +1,7 @@
 use strict;
 BEGIN{ if (not $] < 5.006) { require warnings; warnings->import } }
 package Test::Reporter::Transport::Null;
-our $VERSION = '1.59'; # VERSION
+our $VERSION = '1.60'; # VERSION
 
 use base 'Test::Reporter::Transport';
 
@@ -21,7 +21,7 @@ __END__
 
 =pod
 
-=encoding utf-8
+=encoding UTF-8
 
 =head1 NAME
 
@@ -29,7 +29,7 @@ Test::Reporter::Transport::Null - Null transport for Test::Reporter
 
 =head1 VERSION
 
-version 1.59
+version 1.60
 
 =head1 SYNOPSIS
 
@@ -42,12 +42,12 @@ version 1.59
 This module provides a "null" transport option that does nothing when
 C<send()> is called.
 
-=for Pod::Coverage new send
-
 =head1 USAGE
 
 See L<Test::Reporter> and L<Test::Reporter::Transport> for general usage
 information.
+
+=for Pod::Coverage new send
 
 =head1 AUTHORS
 
@@ -78,10 +78,6 @@ Richard Soderberg <rsod@cpan.org>
 Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
 =back
-
-=head1 CONTRIBUTOR
-
-Vincent Pit <perl@profvince.com>
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -2,14 +2,14 @@ NAME
     Test::Reporter - sends test results to cpan-testers@perl.org
 
 VERSION
-    version 1.59
+    version 1.60
 
 SYNOPSIS
       use Test::Reporter;
 
       my $reporter = Test::Reporter->new(
           transport => 'File',
-          transport_args => [ dir => '/tmp' ],
+          transport_args => [ '/tmp' ],
       );
 
       $reporter->grade('pass');
@@ -20,7 +20,7 @@ SYNOPSIS
 
       my $reporter = Test::Reporter->new(
           transport => 'File',
-          transport_args => [ dir => '/tmp' ],
+          transport_args => [ '/tmp' ],
       );
 
       $reporter->grade('fail');
@@ -33,7 +33,7 @@ SYNOPSIS
 
       my $reporter = Test::Reporter->new(
           transport => 'File',
-          transport_args => [ dir => '/tmp' ],
+          transport_args => [ '/tmp' ],
           grade => 'fail',
           distribution => 'Mail-Freshmeat-1.20',
           from => 'whoever@wherever.net (Whoever Wherever)',
@@ -102,7 +102,7 @@ ATTRIBUTES
         transport. See "transport_args".
 
          $reporter->transport(
-             'File', dir => '/tmp'
+             'File', '/tmp'
          );
 
         This is not designed to be an extensible platform upon which to
@@ -255,16 +255,16 @@ SEE ALSO
 SUPPORT
   Bugs / Feature Requests
     Please report any bugs or feature requests through the issue tracker at
-    <https://rt.cpan.org/Public/Dist/Display.html?Name=Test-Reporter>. You
-    will be notified automatically of any progress on your issue.
+    <https://github.com/cpan-testers/Test-Reporter/issues>. You will be
+    notified automatically of any progress on your issue.
 
   Source Code
     This is open source software. The code repository is available for
     public review and contribution under the terms of the license.
 
-    <https://github.com/dagolden/test-reporter>
+    <https://github.com/cpan-testers/Test-Reporter>
 
-      git clone git://github.com/dagolden/test-reporter.git
+      git clone https://github.com/cpan-testers/Test-Reporter.git
 
 AUTHORS
     *   Adam J. Foxson <afoxson@pobox.com>
@@ -279,8 +279,12 @@ AUTHORS
 
     *   Kurt Starsinic <Kurt.Starsinic@isinet.com>
 
-CONTRIBUTOR
-    Vincent Pit <perl@profvince.com>
+CONTRIBUTORS
+    *   Andreas Koenig <andk@cpan.org>
+
+    *   Tatsuhiko Miyagawa <miyagawa@bulknews.net>
+
+    *   Vincent Pit <perl@profvince.com>
 
 COPYRIGHT AND LICENSE
     This software is copyright (c) 2013 by Authors and Contributors.

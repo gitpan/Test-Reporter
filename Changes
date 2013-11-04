@@ -3,6 +3,15 @@ Revision history for Perl extension Test::Reporter.
 For the complete changelog, visit:
 http://github.com/dagolden/test-reporter/commits/master
 
+1.60      2013-11-04 13:49:54 America/New_York
+
+        [FIXED]
+
+        - read() now fixes up the architecture name
+
+        - fixed documentation example for transport arguments
+          involving File transport
+
 1.59      2013-06-05 23:10:30 America/New_York
 
 
